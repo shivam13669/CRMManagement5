@@ -77,7 +77,9 @@ export default function AmbulanceManagement() {
   const [modalOpen, setModalOpen] = useState(false);
 
   // Cache for resolved addresses when pickup_address contains lat,lng
-  const [resolvedAddresses, setResolvedAddresses] = useState<Record<number, string>>({});
+  const [resolvedAddresses, setResolvedAddresses] = useState<
+    Record<number, string>
+  >({});
   const [resolvingIds, setResolvingIds] = useState<Record<number, boolean>>({});
 
   const latLngRegex = /^\s*-?\d+(?:\.\d+)?\s*,\s*-?\d+(?:\.\d+)?\s*$/;
@@ -92,7 +94,7 @@ export default function AmbulanceManagement() {
       const data = await res.json();
       return data.display_name || null;
     } catch (err) {
-      console.error('Reverse geocode failed', err);
+      console.error("Reverse geocode failed", err);
       return null;
     }
   };
@@ -550,7 +552,8 @@ export default function AmbulanceManagement() {
                     <MapPin className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
                     <span className="text-gray-600 line-clamp-2">
                       {latLngRegex.test(request.pickup_address)
-                        ? (resolvedAddresses[request.id] || request.pickup_address)
+                        ? resolvedAddresses[request.id] ||
+                          request.pickup_address
                         : request.pickup_address}
                     </span>
                     {latLngRegex.test(request.pickup_address) && (
@@ -703,7 +706,8 @@ export default function AmbulanceManagement() {
                       <div className="ml-6">
                         <p className="text-gray-600">
                           {latLngRegex.test(selectedRequest.pickup_address)
-                            ? (resolvedAddresses[selectedRequest.id] || selectedRequest.pickup_address)
+                            ? resolvedAddresses[selectedRequest.id] ||
+                              selectedRequest.pickup_address
                             : selectedRequest.pickup_address}
                         </p>
                         {latLngRegex.test(selectedRequest.pickup_address) && (
@@ -719,7 +723,9 @@ export default function AmbulanceManagement() {
                               Open in Google Maps
                             </a>
                             {resolvingIds[selectedRequest.id] ? (
-                              <span className="text-sm text-gray-500">Resolving address...</span>
+                              <span className="text-sm text-gray-500">
+                                Resolving address...
+                              </span>
                             ) : null}
                           </div>
                         )}
@@ -727,7 +733,9 @@ export default function AmbulanceManagement() {
                         {/* Show customer's signup captured address (if any) */}
                         {selectedRequest.customer_signup_address && (
                           <div className="mt-3">
-                            <p className="text-sm font-medium text-gray-900">Signup Address</p>
+                            <p className="text-sm font-medium text-gray-900">
+                              Signup Address
+                            </p>
                             <p className="text-gray-600">
                               {selectedRequest.customer_signup_address}
                             </p>

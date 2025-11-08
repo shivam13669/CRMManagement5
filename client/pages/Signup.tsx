@@ -140,11 +140,12 @@ export default function Signup() {
         full_name: formData.name,
         phone: formData.phone,
         // If customer and address captured, include it
-        ...(formData.role === "customer" && formData.signup_address && {
-          address: formData.signup_address,
-          signup_lat: formData.signup_lat,
-          signup_lng: formData.signup_lng,
-        }),
+        ...(formData.role === "customer" &&
+          formData.signup_address && {
+            address: formData.signup_address,
+            signup_lat: formData.signup_lat,
+            signup_lng: formData.signup_lng,
+          }),
         // Doctor specific fields
         ...(formData.role === "doctor" && {
           specialization: formData.specialization,

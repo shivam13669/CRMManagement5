@@ -52,7 +52,14 @@ export default function RequestAmbulance() {
           if (response.ok) {
             const data = await response.json();
             // API returns { user: {...} }
-            setUserPhone((data && data.user && (data.user.phone || data.user.mobile || data.user.contact_number)) || "");
+            setUserPhone(
+              (data &&
+                data.user &&
+                (data.user.phone ||
+                  data.user.mobile ||
+                  data.user.contact_number)) ||
+                "",
+            );
           }
         }
       } catch (error) {
