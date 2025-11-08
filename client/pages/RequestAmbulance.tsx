@@ -81,13 +81,30 @@ export default function RequestAmbulance() {
 
   const handleAllowLocation = async () => {
     try {
+      setLocationRequestAttempt(prev => prev + 1);
+
+      // Clear stored denied status to allow fresh request
+      localStorage.removeItem("locationPermission");
+
+      // Try to request location fresh
       const location = await requestCurrentLocation();
       setUserLocation(location.address || location.coordinates);
       setLocationPermissionDenied(false);
       setShowLocationDialog(false);
+      setError(null);
     } catch (error) {
       console.error("Error getting location:", error);
-      setError("Unable to get your location. Please try again.");
+
+      // If permission was denied by browser
+      if (error instanceof GeolocationPositionError && error.code === 1) {
+        setError(
+          "Location permission was denied by your browser. Please enable location permission in your browser settings for this site and try again."
+        );
+      } else {
+        setError("Unable to get your location. Please check your browser settings and try again.");
+      }
+
+      // Keep the dialog open so user can retry
     }
   };
 
