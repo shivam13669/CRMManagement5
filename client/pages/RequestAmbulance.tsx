@@ -39,6 +39,7 @@ export default function RequestAmbulance() {
   const [userLocation, setUserLocation] = useState<string | null>(null);
   const [showLocationDialog, setShowLocationDialog] = useState(false);
   const [locationPermissionDenied, setLocationPermissionDenied] = useState(false);
+  const [locationRequestAttempt, setLocationRequestAttempt] = useState(0);
 
   useEffect(() => {
     const loadUserData = async () => {
