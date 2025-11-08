@@ -284,11 +284,6 @@ export default function Signup() {
                   </SelectItem>
                 </SelectContent>
               </Select>
-              {formData.role === "customer" && formData.signup_address && (
-                <p className="text-sm text-gray-500 mt-2">
-                  Location captured: {formData.signup_address}
-                </p>
-              )}
             </div>
 
             <div>
