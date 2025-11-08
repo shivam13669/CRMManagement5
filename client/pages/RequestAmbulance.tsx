@@ -113,13 +113,12 @@ export default function RequestAmbulance() {
     setError(null);
 
     // Check if location is available
-    if (!userLocation && locationPermissionDenied) {
-      setShowLocationDialog(true);
-      return;
-    }
-
     if (!userLocation) {
-      setError("Location permission is required to request ambulance. Please allow location access.");
+      // Show location permission dialog to allow retry
+      setShowLocationDialog(true);
+      if (!error) {
+        // Only clear error if we're showing the dialog fresh
+      }
       return;
     }
 
