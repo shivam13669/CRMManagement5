@@ -112,6 +112,8 @@ export const handleGetAmbulanceRequests: RequestHandler = async (req, res) => {
         u.email as patient_email,
         u.phone as patient_phone,
         c.address as customer_signup_address,
+        c.signup_lat as customer_signup_lat,
+        c.signup_lng as customer_signup_lng,
         staff.full_name as assigned_staff_name,
         staff.phone as assigned_staff_phone
       FROM ambulance_requests ar

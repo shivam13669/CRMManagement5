@@ -122,6 +122,8 @@ function createTables(): void {
         gender TEXT CHECK(gender IN ('male', 'female', 'other')),
         blood_group TEXT,
         address TEXT,
+        signup_lat TEXT,
+        signup_lng TEXT,
         emergency_contact TEXT,
         emergency_contact_name TEXT,
         emergency_contact_relation TEXT,
@@ -745,11 +747,11 @@ export function createCustomer(customer: Customer): number {
   try {
     const stmt = db.prepare(`
       INSERT INTO customers (
-        user_id, date_of_birth, gender, blood_group, address, 
+        user_id, date_of_birth, gender, blood_group, address, signup_lat, signup_lng,
         emergency_contact, emergency_contact_name, emergency_contact_relation,
         allergies, medical_conditions, current_medications, insurance,
         insurance_policy_number, occupation, height, weight, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
     `);
 
     stmt.run([
@@ -758,6 +760,9 @@ export function createCustomer(customer: Customer): number {
       customer.gender || null,
       customer.blood_group || null,
       customer.address || null,
+      // new signup lat/lng fields
+      (customer as any).signup_lat || null,
+      (customer as any).signup_lng || null,
       customer.emergency_contact || null,
       customer.emergency_contact_name || null,
       customer.emergency_contact_relation || null,
