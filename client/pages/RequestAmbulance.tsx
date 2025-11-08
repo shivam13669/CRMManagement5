@@ -371,22 +371,22 @@ export default function RequestAmbulance() {
 
             {error && (
               <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800">
-                <p className="font-medium mb-2">⚠️ Permission Denied</p>
-                <p>{error}</p>
-                <p className="mt-2 text-xs text-red-700">
+                <div className="font-medium mb-2">⚠️ Permission Denied</div>
+                <div>{error}</div>
+                <div className="mt-2 text-xs text-red-700">
                   <strong>How to fix:</strong> Click the lock icon in your browser's address bar and enable location permission for this site.
-                </p>
+                </div>
               </div>
             )}
 
             {!error && (
               <DialogDescription className="space-y-3">
-                <p>
+                <div>
                   We need your precise location to send an ambulance to the correct place.
-                </p>
-                <p className="text-sm text-gray-600">
+                </div>
+                <div className="text-sm text-gray-600">
                   Without location access, emergency services may be delayed. Please allow location permission to continue.
-                </p>
+                </div>
               </DialogDescription>
             )}
 
