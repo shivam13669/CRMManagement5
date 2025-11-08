@@ -338,6 +338,43 @@ export default function RequestAmbulance() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Location Permission Dialog */}
+        <Dialog open={showLocationDialog} onOpenChange={setShowLocationDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <div className="flex items-center space-x-3 mb-2">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <MapPin className="w-6 h-6 text-blue-600" />
+                </div>
+                <DialogTitle>Location Permission Required</DialogTitle>
+              </div>
+            </DialogHeader>
+            <DialogDescription className="space-y-3">
+              <p>
+                We need your precise location to send an ambulance to the correct place.
+              </p>
+              <p className="text-sm text-gray-600">
+                Without location access, emergency services may be delayed. Please allow location permission to continue.
+              </p>
+            </DialogDescription>
+            <DialogFooter className="flex gap-3 pt-4">
+              <Button
+                variant="outline"
+                onClick={() => setShowLocationDialog(false)}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleAllowLocation}
+                className="flex-1 bg-blue-600 hover:bg-blue-700"
+              >
+                Allow Location
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </CustomerLayout>
   );
