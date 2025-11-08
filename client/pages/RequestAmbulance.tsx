@@ -2,11 +2,8 @@ import { useState, useEffect } from "react";
 import { CustomerLayout } from "../components/CustomerLayout";
 import {
   Truck,
-  MapPin,
   Phone,
-  Clock,
   AlertTriangle,
-  Navigation,
   Loader,
 } from "lucide-react";
 import {
