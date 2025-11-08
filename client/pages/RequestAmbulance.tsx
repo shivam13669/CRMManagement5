@@ -78,8 +78,32 @@ export default function RequestAmbulance() {
     loadUserData();
   }, []);
 
+  const handleAllowLocation = async () => {
+    try {
+      const location = await requestCurrentLocation();
+      setUserLocation(location.address || location.coordinates);
+      setLocationPermissionDenied(false);
+      setShowLocationDialog(false);
+    } catch (error) {
+      console.error("Error getting location:", error);
+      setError("Unable to get your location. Please try again.");
+    }
+  };
+
   const handleRequestAmbulance = async () => {
     setError(null);
+
+    // Check if location is available
+    if (!userLocation && locationPermissionDenied) {
+      setShowLocationDialog(true);
+      return;
+    }
+
+    if (!userLocation) {
+      setError("Location permission is required to request ambulance. Please allow location access.");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -105,7 +129,7 @@ export default function RequestAmbulance() {
         body: JSON.stringify({
           emergency_type: "Emergency",
           contact_number: userPhone,
-          pickup_address: userLocation || "Current Location",
+          pickup_address: userLocation,
           destination_address: "Nearest Hospital",
           customer_condition: "Emergency ambulance requested - customer requires immediate assistance",
           priority: "high",
