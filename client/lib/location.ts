@@ -60,11 +60,11 @@ export const saveLocation = (location: LocationData) => {
 // Get address from coordinates using Google Geocoding API
 export const getAddressFromCoordinates = async (
   latitude: number,
-  longitude: number
+  longitude: number,
 ): Promise<string> => {
   try {
     const response = await fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_API_KEY}`
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_API_KEY}`,
     );
 
     if (response.ok) {
@@ -91,9 +91,9 @@ export const requestCurrentLocation = (): Promise<LocationData> => {
       async (position) => {
         const { latitude, longitude } = position.coords;
         const coordinates = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
-        
+
         const address = await getAddressFromCoordinates(latitude, longitude);
-        
+
         const locationData: LocationData = {
           latitude,
           longitude,
@@ -113,24 +113,25 @@ export const requestCurrentLocation = (): Promise<LocationData> => {
         enableHighAccuracy: true,
         timeout: 10000,
         maximumAge: 0,
-      }
+      },
     );
   });
 };
 
 // Get location with permission request on first load
-export const getLocationWithPermission = async (): Promise<LocationData | null> => {
-  // Check if location already stored
-  const storedLocation = getStoredLocation();
-  if (storedLocation) {
-    return storedLocation;
-  }
+export const getLocationWithPermission =
+  async (): Promise<LocationData | null> => {
+    // Check if location already stored
+    const storedLocation = getStoredLocation();
+    if (storedLocation) {
+      return storedLocation;
+    }
 
-  // Request location from browser
-  try {
-    return await requestCurrentLocation();
-  } catch (error) {
-    console.error("Error requesting location:", error);
-    return null;
-  }
-};
+    // Request location from browser
+    try {
+      return await requestCurrentLocation();
+    } catch (error) {
+      console.error("Error requesting location:", error);
+      return null;
+    }
+  };

@@ -1,12 +1,6 @@
 import { useState, useEffect } from "react";
 import { CustomerLayout } from "../components/CustomerLayout";
-import {
-  Truck,
-  Phone,
-  AlertTriangle,
-  Loader,
-  MapPin,
-} from "lucide-react";
+import { Truck, Phone, AlertTriangle, Loader, MapPin } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -39,7 +33,8 @@ export default function RequestAmbulance() {
   const [userPhone, setUserPhone] = useState<string>("");
   const [userLocation, setUserLocation] = useState<string | null>(null);
   const [showLocationDialog, setShowLocationDialog] = useState(false);
-  const [locationPermissionDenied, setLocationPermissionDenied] = useState(false);
+  const [locationPermissionDenied, setLocationPermissionDenied] =
+    useState(false);
   const [locationRequestAttempt, setLocationRequestAttempt] = useState(0);
 
   useEffect(() => {
@@ -82,7 +77,7 @@ export default function RequestAmbulance() {
 
   const handleAllowLocation = async () => {
     try {
-      setLocationRequestAttempt(prev => prev + 1);
+      setLocationRequestAttempt((prev) => prev + 1);
 
       // Clear stored denied status to allow fresh request
       localStorage.removeItem("locationPermission");
@@ -99,10 +94,12 @@ export default function RequestAmbulance() {
       // If permission was denied by browser
       if (error instanceof GeolocationPositionError && error.code === 1) {
         setError(
-          "Location permission was denied by your browser. Please enable location permission in your browser settings for this site and try again."
+          "Location permission was denied by your browser. Please enable location permission in your browser settings for this site and try again.",
         );
       } else {
-        setError("Unable to get your location. Please check your browser settings and try again.");
+        setError(
+          "Unable to get your location. Please check your browser settings and try again.",
+        );
       }
 
       // Keep the dialog open so user can retry
@@ -133,7 +130,9 @@ export default function RequestAmbulance() {
       }
 
       if (!userPhone) {
-        setError("Could not retrieve your contact number. Please update your profile.");
+        setError(
+          "Could not retrieve your contact number. Please update your profile.",
+        );
         setIsLoading(false);
         return;
       }
@@ -149,7 +148,8 @@ export default function RequestAmbulance() {
           contact_number: userPhone,
           pickup_address: userLocation,
           destination_address: "Nearest Hospital",
-          customer_condition: "Emergency ambulance requested - customer requires immediate assistance",
+          customer_condition:
+            "Emergency ambulance requested - customer requires immediate assistance",
           priority: "high",
         }),
       });
@@ -189,7 +189,8 @@ export default function RequestAmbulance() {
                 Ambulance Requested Successfully!
               </h2>
               <p className="text-green-700 mb-6">
-                Your emergency ambulance request has been sent to the admin. An ambulance will be dispatched shortly.
+                Your emergency ambulance request has been sent to the admin. An
+                ambulance will be dispatched shortly.
               </p>
 
               <div className="bg-white rounded-lg p-6 mb-6">
@@ -204,15 +205,18 @@ export default function RequestAmbulance() {
                   </div>
                   <div>
                     <span className="text-sm text-gray-600">Status:</span>
-                    <div className="font-bold text-blue-600">
-                      Pending
-                    </div>
+                    <div className="font-bold text-blue-600">Pending</div>
                   </div>
                 </div>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button variant="outline" onClick={() => window.location.href = "/my-ambulance-requests"}>
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    (window.location.href = "/my-ambulance-requests")
+                  }
+                >
                   View My Requests
                 </Button>
                 <Button variant="destructive">
@@ -256,7 +260,8 @@ export default function RequestAmbulance() {
             <CardHeader>
               <CardTitle>Request Emergency Ambulance</CardTitle>
               <CardDescription>
-                Click the button below to send an emergency ambulance request to the admin
+                Click the button below to send an emergency ambulance request to
+                the admin
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -272,10 +277,14 @@ export default function RequestAmbulance() {
 
               <div className="space-y-6">
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
-                  <p className="font-medium text-blue-900">Quick Request Details:</p>
+                  <p className="font-medium text-blue-900">
+                    Quick Request Details:
+                  </p>
                   <ul className="text-sm text-blue-800 space-y-1">
                     <li>• Contact: {userPhone || "Loading..."}</li>
-                    <li>• Location: {userLocation || "Using current location"}</li>
+                    <li>
+                      • Location: {userLocation || "Using current location"}
+                    </li>
                     <li>• Priority: High (Emergency)</li>
                   </ul>
                 </div>
@@ -301,7 +310,8 @@ export default function RequestAmbulance() {
                 </Button>
 
                 <p className="text-sm text-gray-600 text-center">
-                  Your request will be sent to the admin immediately and an ambulance will be dispatched to your current location.
+                  Your request will be sent to the admin immediately and an
+                  ambulance will be dispatched to your current location.
                 </p>
               </div>
             </CardContent>
@@ -312,9 +322,7 @@ export default function RequestAmbulance() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-red-600">
-                Emergency Numbers
-              </CardTitle>
+              <CardTitle className="text-red-600">Emergency Numbers</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
@@ -374,7 +382,9 @@ export default function RequestAmbulance() {
                 <div className="font-medium mb-2">⚠️ Permission Denied</div>
                 <div>{error}</div>
                 <div className="mt-2 text-xs text-red-700">
-                  <strong>How to fix:</strong> Click the lock icon in your browser's address bar and enable location permission for this site.
+                  <strong>How to fix:</strong> Click the lock icon in your
+                  browser's address bar and enable location permission for this
+                  site.
                 </div>
               </div>
             )}
@@ -382,10 +392,12 @@ export default function RequestAmbulance() {
             {!error && (
               <DialogDescription className="space-y-3">
                 <div>
-                  We need your precise location to send an ambulance to the correct place.
+                  We need your precise location to send an ambulance to the
+                  correct place.
                 </div>
                 <div className="text-sm text-gray-600">
-                  Without location access, emergency services may be delayed. Please allow location permission to continue.
+                  Without location access, emergency services may be delayed.
+                  Please allow location permission to continue.
                 </div>
               </DialogDescription>
             )}
@@ -405,7 +417,9 @@ export default function RequestAmbulance() {
                 onClick={handleAllowLocation}
                 className="flex-1 bg-blue-600 hover:bg-blue-700"
               >
-                {locationRequestAttempt > 0 ? "Retry Location" : "Allow Location"}
+                {locationRequestAttempt > 0
+                  ? "Retry Location"
+                  : "Allow Location"}
               </Button>
             </DialogFooter>
           </DialogContent>

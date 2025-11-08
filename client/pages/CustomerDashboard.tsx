@@ -67,7 +67,10 @@ export default function CustomerDashboard() {
   };
 
   const handleDenyLocation = () => {
-    localStorage.setItem("locationPermission", JSON.stringify({ allowed: false, timestamp: Date.now() }));
+    localStorage.setItem(
+      "locationPermission",
+      JSON.stringify({ allowed: false, timestamp: Date.now() }),
+    );
     setShowLocationDialog(false);
   };
 
@@ -373,10 +376,12 @@ export default function CustomerDashboard() {
           </DialogHeader>
           <DialogDescription className="space-y-3">
             <div>
-              We need your location to provide accurate ambulance emergency services.
+              We need your location to provide accurate ambulance emergency
+              services.
             </div>
             <div className="text-sm text-gray-600">
-              Your location will be shared with emergency response teams to ensure quick assistance.
+              Your location will be shared with emergency response teams to
+              ensure quick assistance.
             </div>
           </DialogDescription>
           <DialogFooter className="flex gap-3 pt-4">
