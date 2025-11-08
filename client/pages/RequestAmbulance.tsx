@@ -368,18 +368,35 @@ export default function RequestAmbulance() {
                 <DialogTitle>Location Permission Required</DialogTitle>
               </div>
             </DialogHeader>
-            <DialogDescription className="space-y-3">
-              <p>
-                We need your precise location to send an ambulance to the correct place.
-              </p>
-              <p className="text-sm text-gray-600">
-                Without location access, emergency services may be delayed. Please allow location permission to continue.
-              </p>
-            </DialogDescription>
+
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800">
+                <p className="font-medium mb-2">⚠️ Permission Denied</p>
+                <p>{error}</p>
+                <p className="mt-2 text-xs text-red-700">
+                  <strong>How to fix:</strong> Click the lock icon in your browser's address bar and enable location permission for this site.
+                </p>
+              </div>
+            )}
+
+            {!error && (
+              <DialogDescription className="space-y-3">
+                <p>
+                  We need your precise location to send an ambulance to the correct place.
+                </p>
+                <p className="text-sm text-gray-600">
+                  Without location access, emergency services may be delayed. Please allow location permission to continue.
+                </p>
+              </DialogDescription>
+            )}
+
             <DialogFooter className="flex gap-3 pt-4">
               <Button
                 variant="outline"
-                onClick={() => setShowLocationDialog(false)}
+                onClick={() => {
+                  setShowLocationDialog(false);
+                  setError(null);
+                }}
                 className="flex-1"
               >
                 Cancel
@@ -388,7 +405,7 @@ export default function RequestAmbulance() {
                 onClick={handleAllowLocation}
                 className="flex-1 bg-blue-600 hover:bg-blue-700"
               >
-                Allow Location
+                {locationRequestAttempt > 0 ? "Retry Location" : "Allow Location"}
               </Button>
             </DialogFooter>
           </DialogContent>
