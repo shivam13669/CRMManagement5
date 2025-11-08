@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { CustomerLayout } from "../components/CustomerLayout";
 import { useNavigate } from "react-router-dom";
 import {
@@ -13,6 +14,7 @@ import {
   Thermometer,
   Activity,
   DollarSign,
+  MapPin,
 } from "lucide-react";
 import {
   Card,
@@ -22,10 +24,52 @@ import {
   CardTitle,
 } from "../components/ui/card";
 import { Button } from "../components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "../components/ui/dialog";
+import { getLocationWithPermission } from "../lib/location";
 
 export default function CustomerDashboard() {
   const userName = localStorage.getItem("userName") || "Customer";
   const navigate = useNavigate();
+  const [showLocationDialog, setShowLocationDialog] = useState(false);
+  const [locationRequested, setLocationRequested] = useState(false);
+
+  useEffect(() => {
+    const requestLocationOnFirstLogin = async () => {
+      if (locationRequested) return;
+
+      setLocationRequested(true);
+
+      // Check if location permission was already asked
+      const permissionStatus = localStorage.getItem("locationPermission");
+      if (!permissionStatus) {
+        // First time - show dialog and request location
+        setShowLocationDialog(true);
+      }
+    };
+
+    requestLocationOnFirstLogin();
+  }, [locationRequested]);
+
+  const handleAllowLocation = async () => {
+    try {
+      await getLocationWithPermission();
+      setShowLocationDialog(false);
+    } catch (error) {
+      console.error("Error getting location:", error);
+    }
+  };
+
+  const handleDenyLocation = () => {
+    localStorage.setItem("locationPermission", JSON.stringify({ allowed: false, timestamp: Date.now() }));
+    setShowLocationDialog(false);
+  };
 
   const quickActions = [
     {
