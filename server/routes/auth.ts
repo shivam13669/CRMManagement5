@@ -33,6 +33,8 @@ interface RegisterRequest {
   gender?: "male" | "female" | "other";
   blood_group?: string;
   address?: string;
+  signup_lat?: string;
+  signup_lng?: string;
   emergency_contact?: string;
   emergency_contact_name?: string;
   emergency_contact_relation?: string;
@@ -210,12 +212,15 @@ export const handleRegister: RequestHandler = async (req, res) => {
       const userId = await createUser(user);
 
       // Create customer record
-      const customer: Customer = {
+      const customer: any = {
         user_id: userId,
         date_of_birth,
         gender,
         blood_group,
         address,
+        // include signup coords when provided
+        signup_lat: (req.body as any).signup_lat || null,
+        signup_lng: (req.body as any).signup_lng || null,
         emergency_contact,
         emergency_contact_name,
         emergency_contact_relation,

@@ -740,9 +740,16 @@ export default function AmbulanceManagement() {
                               {selectedRequest.customer_signup_address}
                             </p>
                             <a
-                              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                                selectedRequest.customer_signup_address,
-                              )}`}
+                              href={
+                                selectedRequest.customer_signup_lat &&
+                                selectedRequest.customer_signup_lng
+                                  ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                      `${selectedRequest.customer_signup_lat},${selectedRequest.customer_signup_lng}`,
+                                    )}`
+                                  : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                      selectedRequest.customer_signup_address,
+                                    )}`
+                              }
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-sm text-blue-600 hover:underline mt-2 inline-block"
