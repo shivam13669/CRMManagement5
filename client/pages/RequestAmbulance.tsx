@@ -26,20 +26,44 @@ export default function RequestAmbulance() {
   const [userPhone, setUserPhone] = useState<string>("");
   const [userLocation, setUserLocation] = useState<string | null>(null);
 
-  const emergencyTypes = [
-    "Heart Attack",
-    "Stroke",
-    "Severe Injury/Accident",
-    "Breathing Difficulty",
-    "Pregnancy/Delivery",
-    "Poisoning",
-    "Burns",
-    "Mental Health Emergency",
-    "Other Medical Emergency",
-  ];
+  useEffect(() => {
+    const fetchUserPhone = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        if (token) {
+          const response = await fetch("/api/user/profile", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setUserPhone(data.phone || "");
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    fetchUserPhone();
+
+    // Try to get user's location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation(`${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
+        },
+        (error) => {
+          console.log("Location permission denied or unavailable");
+        }
+      );
+    }
+  }, []);
+
+  const handleRequestAmbulance = async () => {
     setError(null);
     setIsLoading(true);
 
@@ -51,14 +75,8 @@ export default function RequestAmbulance() {
         return;
       }
 
-      // Validate required fields
-      if (
-        !formData.emergencyType ||
-        !formData.contactNumber ||
-        !formData.address ||
-        !formData.description
-      ) {
-        setError("Please fill in all required fields");
+      if (!userPhone) {
+        setError("Could not retrieve your contact number. Please update your profile.");
         setIsLoading(false);
         return;
       }
@@ -70,13 +88,12 @@ export default function RequestAmbulance() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          emergency_type: formData.emergencyType,
-          contact_number: formData.contactNumber,
-          customer_email: formData.email || undefined,
-          pickup_address: formData.address,
-          destination_address: formData.landmark || "Not specified",
-          customer_condition: formData.description,
-          priority: formData.urgencyLevel === "high" ? "high" : "normal",
+          emergency_type: "Emergency",
+          contact_number: userPhone,
+          pickup_address: userLocation || "Current Location",
+          destination_address: "Nearest Hospital",
+          customer_condition: "Emergency ambulance requested - customer requires immediate assistance",
+          priority: "high",
         }),
       });
 
