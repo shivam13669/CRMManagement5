@@ -594,6 +594,16 @@ export default function CustomersManagement() {
                                         <p className="font-medium">
                                           {selectedCustomer.address}
                                         </p>
+                                        <a
+                                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                            selectedCustomer.address,
+                                          )}`}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-sm text-blue-600 hover:underline mt-2 inline-block"
+                                        >
+                                          View on Google Maps
+                                        </a>
                                       </div>
                                     </div>
                                   )}
