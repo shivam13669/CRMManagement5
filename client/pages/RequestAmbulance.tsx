@@ -28,6 +28,7 @@ import {
   getLocationWithPermission,
   requestCurrentLocation,
   getLocationPermissionStatus,
+  clearLocationPermissionStatus,
 } from "../lib/location";
 
 export default function RequestAmbulance() {
