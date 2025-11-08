@@ -5,6 +5,7 @@ import {
   Phone,
   AlertTriangle,
   Loader,
+  MapPin,
 } from "lucide-react";
 import {
   Card,
@@ -14,6 +15,20 @@ import {
   CardTitle,
 } from "../components/ui/card";
 import { Button } from "../components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "../components/ui/dialog";
+import {
+  getStoredLocation,
+  getLocationWithPermission,
+  requestCurrentLocation,
+  getLocationPermissionStatus,
+} from "../lib/location";
 
 export default function RequestAmbulance() {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -22,9 +37,12 @@ export default function RequestAmbulance() {
   const [requestId, setRequestId] = useState<string | null>(null);
   const [userPhone, setUserPhone] = useState<string>("");
   const [userLocation, setUserLocation] = useState<string | null>(null);
+  const [showLocationDialog, setShowLocationDialog] = useState(false);
+  const [locationPermissionDenied, setLocationPermissionDenied] = useState(false);
 
   useEffect(() => {
-    const fetchUserPhone = async () => {
+    const loadUserData = async () => {
+      // Fetch user phone
       try {
         const token = localStorage.getItem("authToken");
         if (token) {
@@ -42,22 +60,22 @@ export default function RequestAmbulance() {
       } catch (error) {
         console.error("Error fetching user profile:", error);
       }
+
+      // Load stored location
+      const storedLocation = getStoredLocation();
+      if (storedLocation) {
+        setUserLocation(storedLocation.address || storedLocation.coordinates);
+        return;
+      }
+
+      // Check if permission was previously denied
+      const permissionStatus = getLocationPermissionStatus();
+      if (permissionStatus && !permissionStatus.allowed) {
+        setLocationPermissionDenied(true);
+      }
     };
 
-    fetchUserPhone();
-
-    // Try to get user's location
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setUserLocation(`${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
-        },
-        (error) => {
-          console.log("Location permission denied or unavailable");
-        }
-      );
-    }
+    loadUserData();
   }, []);
 
   const handleRequestAmbulance = async () => {
