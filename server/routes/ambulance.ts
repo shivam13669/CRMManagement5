@@ -96,7 +96,11 @@ export const handleGetAmbulanceRequests: RequestHandler = async (req, res) => {
         .json({ error: "Only staff and admin can view ambulance requests" });
     }
 
-    const result = db.exec(`
+    let result: any;
+
+    try {
+      // Try query including signup lat/lng (newer schema)
+      result = db.exec(`
       SELECT
         ar.id,
         ar.pickup_address,
@@ -122,6 +126,34 @@ export const handleGetAmbulanceRequests: RequestHandler = async (req, res) => {
       LEFT JOIN users staff ON ar.assigned_staff_id = staff.id
       ORDER BY ar.created_at DESC
     `);
+    } catch (err) {
+      console.warn('Ambulance query with signup_lat/signup_lng failed, falling back to older query', err);
+      // Fallback to older query if DB doesn't have the new columns
+      result = db.exec(`
+      SELECT
+        ar.id,
+        ar.pickup_address,
+        ar.destination_address,
+        ar.emergency_type,
+        ar.customer_condition,
+        ar.contact_number,
+        ar.status,
+        ar.priority,
+        ar.notes,
+        ar.created_at,
+        u.full_name as patient_name,
+        u.email as patient_email,
+        u.phone as patient_phone,
+        c.address as customer_signup_address,
+        staff.full_name as assigned_staff_name,
+        staff.phone as assigned_staff_phone
+      FROM ambulance_requests ar
+      JOIN users u ON ar.customer_user_id = u.id
+      LEFT JOIN customers c ON u.id = c.user_id
+      LEFT JOIN users staff ON ar.assigned_staff_id = staff.id
+      ORDER BY ar.created_at DESC
+    `);
+    }
 
     let requests = [];
     if (result.length > 0) {
