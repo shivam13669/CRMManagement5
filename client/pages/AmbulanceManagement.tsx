@@ -508,6 +508,8 @@ export default function AmbulanceManagement() {
                 onClick={() => {
                   setSelectedRequest(request);
                   setModalOpen(true);
+                  // resolve address when opening details
+                  resolveAddressForRequest(request);
                 }}
                 className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow cursor-pointer"
               >
