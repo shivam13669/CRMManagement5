@@ -27,12 +27,57 @@ export default function Signup() {
     confirmPassword: "",
     role: "",
     agreeToTerms: false,
+    // Signup captured location (for customers)
+    signup_address: "",
+    signup_lat: "",
+    signup_lng: "",
     // Doctor specific fields
     specialization: "",
     licenseNumber: "",
     experienceYears: "",
     consultationFee: "",
   });
+
+  // Reverse geocode helper (OpenStreetMap Nominatim)
+  const reverseGeocode = async (lat: string, lng: string) => {
+    try {
+      const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(
+        lat,
+      )}&lon=${encodeURIComponent(lng)}`;
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data.display_name || null;
+    } catch (err) {
+      console.error("Reverse geocode failed", err);
+      return null;
+    }
+  };
+
+  // Request location when role set to customer
+  useEffect(() => {
+    if (formData.role === "customer") {
+      if (!("geolocation" in navigator)) return;
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const lat = pos.coords.latitude.toString();
+          const lng = pos.coords.longitude.toString();
+          const address = await reverseGeocode(lat, lng);
+          setFormData((prev) => ({
+            ...prev,
+            signup_lat: lat,
+            signup_lng: lng,
+            signup_address: address || `${lat},${lng}`,
+          }));
+        },
+        (err) => {
+          console.warn("Geolocation permission denied or failed", err);
+        },
+        { enableHighAccuracy: true, timeout: 10000 },
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.role]);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
