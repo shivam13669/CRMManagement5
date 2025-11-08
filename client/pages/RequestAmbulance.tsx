@@ -132,8 +132,7 @@ export default function RequestAmbulance() {
                 Ambulance Requested Successfully!
               </h2>
               <p className="text-green-700 mb-6">
-                Your emergency request has been received. An ambulance has been
-                dispatched to your location.
+                Your emergency ambulance request has been sent to the admin. An ambulance will be dispatched shortly.
               </p>
 
               <div className="bg-white rounded-lg p-6 mb-6">
@@ -147,25 +146,17 @@ export default function RequestAmbulance() {
                     </div>
                   </div>
                   <div>
-                    <span className="text-sm text-gray-600">ETA:</span>
-                    <div className="font-bold text-orange-600">
-                      8-12 minutes
+                    <span className="text-sm text-gray-600">Status:</span>
+                    <div className="font-bold text-blue-600">
+                      Pending
                     </div>
-                  </div>
-                  <div>
-                    <span className="text-sm text-gray-600">Ambulance ID:</span>
-                    <div className="font-bold">MH-01-5432</div>
-                  </div>
-                  <div>
-                    <span className="text-sm text-gray-600">Contact:</span>
-                    <div className="font-bold">+91 98765 43210</div>
                   </div>
                 </div>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button variant="outline" onClick={() => setIsSubmitted(false)}>
-                  Track Ambulance
+                <Button variant="outline" onClick={() => window.location.href = "/my-ambulance-requests"}>
+                  View My Requests
                 </Button>
                 <Button variant="destructive">
                   <Phone className="w-4 h-4 mr-2" />
@@ -203,297 +194,110 @@ export default function RequestAmbulance() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Request Form */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Ambulance Request Form</CardTitle>
-                <CardDescription>
-                  Please provide accurate information for quick response
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {error && (
-                  <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-800 rounded-lg flex items-start space-x-3">
-                    <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <h3 className="font-semibold">Error</h3>
-                      <p className="text-sm mt-1">{error}</p>
-                    </div>
-                  </div>
-                )}
-                <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="max-w-2xl mx-auto">
+          <Card>
+            <CardHeader>
+              <CardTitle>Request Emergency Ambulance</CardTitle>
+              <CardDescription>
+                Click the button below to send an emergency ambulance request to the admin
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-800 rounded-lg flex items-start space-x-3">
+                  <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                   <div>
-                    <Label htmlFor="emergencyType">Type of Emergency</Label>
-                    <Select
-                      value={formData.emergencyType}
-                      onValueChange={(value) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          emergencyType: value,
-                        }))
-                      }
-                    >
-                      <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="Select emergency type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {emergencyTypes.map((type) => (
-                          <SelectItem key={type} value={type}>
-                            {type}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <Label htmlFor="patientName">Patient Name</Label>
-                      <Input
-                        id="patientName"
-                        value={formData.patientName}
-                        onChange={(e) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            patientName: e.target.value,
-                          }))
-                        }
-                        className="mt-1"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="patientAge">Age</Label>
-                      <Input
-                        id="patientAge"
-                        type="number"
-                        value={formData.patientAge}
-                        onChange={(e) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            patientAge: e.target.value,
-                          }))
-                        }
-                        className="mt-1"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="patientGender">Gender</Label>
-                      <Select
-                        value={formData.patientGender}
-                        onValueChange={(value) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            patientGender: value,
-                          }))
-                        }
-                      >
-                        <SelectTrigger className="mt-1">
-                          <SelectValue placeholder="Select" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="male">Male</SelectItem>
-                          <SelectItem value="female">Female</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="contactNumber">Contact Number</Label>
-                    <Input
-                      id="contactNumber"
-                      type="tel"
-                      value={formData.contactNumber}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          contactNumber: e.target.value,
-                        }))
-                      }
-                      className="mt-1"
-                      placeholder="Enter 10 digit mobile number"
-                      pattern="[0-9]{10}"
-                      maxLength={10}
-                      minLength={10}
-                      onInput={(e) => {
-                        const input = e.target as HTMLInputElement;
-                        input.value = input.value.replace(/[^0-9]/g, "");
-                        if (input.value.length > 10) {
-                          input.value = input.value.slice(0, 10);
-                        }
-                        setFormData((prev) => ({
-                          ...prev,
-                          contactNumber: input.value,
-                        }));
-                      }}
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          email: e.target.value,
-                        }))
-                      }
-                      className="mt-1"
-                      placeholder="you@example.com"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="address">Complete Address</Label>
-                    <Textarea
-                      id="address"
-                      value={formData.address}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          address: e.target.value,
-                        }))
-                      }
-                      className="mt-1"
-                      placeholder="House number, street, area, city, pincode"
-                      rows={3}
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="landmark">Nearby Landmark</Label>
-                    <Input
-                      id="landmark"
-                      value={formData.landmark}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          landmark: e.target.value,
-                        }))
-                      }
-                      className="mt-1"
-                      placeholder="Hospital, school, temple, etc."
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="description">
-                      Description of Emergency
-                    </Label>
-                    <Textarea
-                      id="description"
-                      value={formData.description}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          description: e.target.value,
-                        }))
-                      }
-                      className="mt-1"
-                      placeholder="Describe the patient's condition and symptoms..."
-                      rows={4}
-                      required
-                    />
-                  </div>
-
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    size="lg"
-                    variant="destructive"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <>
-                        <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        Requesting...
-                      </>
-                    ) : (
-                      <>
-                        <Truck className="w-5 h-5 mr-2" />
-                        Request Emergency Ambulance
-                      </>
-                    )}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Emergency Info & Guidelines */}
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-red-600">
-                  Emergency Numbers
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
-                  <span className="font-medium">National Emergency</span>
-                  <span className="font-bold text-red-600">108</span>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                  <span className="font-medium">Police</span>
-                  <span className="font-bold text-blue-600">100</span>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
-                  <span className="font-medium">Fire Brigade</span>
-                  <span className="font-bold text-orange-600">101</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>While You Wait</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm">
-                <div className="flex items-start space-x-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                  <span>Keep the patient calm and comfortable</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                  <span>Do not move the patient unless necessary</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                  <span>Gather important medical documents</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                  <span>Clear the path for ambulance access</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                  <span>Stay on the line if called by emergency services</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-amber-200 bg-amber-50">
-              <CardContent className="p-4">
-                <div className="flex items-start space-x-2">
-                  <Clock className="w-5 h-5 text-amber-600 mt-0.5" />
-                  <div className="text-amber-800 text-sm">
-                    <strong>Average Response Time:</strong> 8-15 minutes in
-                    urban areas, 15-30 minutes in rural areas.
+                    <h3 className="font-semibold">Error</h3>
+                    <p className="text-sm mt-1">{error}</p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              )}
+
+              <div className="space-y-6">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
+                  <p className="font-medium text-blue-900">Quick Request Details:</p>
+                  <ul className="text-sm text-blue-800 space-y-1">
+                    <li>• Contact: {userPhone || "Loading..."}</li>
+                    <li>• Location: {userLocation || "Using current location"}</li>
+                    <li>• Priority: High (Emergency)</li>
+                  </ul>
+                </div>
+
+                <Button
+                  onClick={handleRequestAmbulance}
+                  className="w-full"
+                  size="lg"
+                  variant="destructive"
+                  disabled={isLoading || !userPhone}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader className="w-5 h-5 mr-2 animate-spin" />
+                      Sending Request...
+                    </>
+                  ) : (
+                    <>
+                      <Truck className="w-5 h-5 mr-2" />
+                      Request Ambulance Now
+                    </>
+                  )}
+                </Button>
+
+                <p className="text-sm text-gray-600 text-center">
+                  Your request will be sent to the admin immediately and an ambulance will be dispatched to your current location.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Emergency Info Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-red-600">
+                Emergency Numbers
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                <span className="font-medium">National Emergency</span>
+                <span className="font-bold text-red-600">108</span>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                <span className="font-medium">Police</span>
+                <span className="font-bold text-blue-600">100</span>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                <span className="font-medium">Fire Brigade</span>
+                <span className="font-bold text-orange-600">101</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>While You Wait</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              <div className="flex items-start space-x-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                <span>Keep the patient calm and comfortable</span>
+              </div>
+              <div className="flex items-start space-x-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                <span>Do not move the patient unless necessary</span>
+              </div>
+              <div className="flex items-start space-x-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                <span>Gather important medical documents</span>
+              </div>
+              <div className="flex items-start space-x-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                <span>Clear the path for ambulance access</span>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </CustomerLayout>
