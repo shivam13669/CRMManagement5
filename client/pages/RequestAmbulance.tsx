@@ -31,7 +31,7 @@ export default function RequestAmbulance() {
       try {
         const token = localStorage.getItem("authToken");
         if (token) {
-          const response = await fetch("/api/user/profile", {
+          const response = await fetch("/api/auth/profile", {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
