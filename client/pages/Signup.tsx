@@ -19,7 +19,9 @@ export default function Signup() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [locationStatus, setLocationStatus] = useState<'unknown'|'granted'|'denied'|'prompt'>('unknown');
+  const [locationStatus, setLocationStatus] = useState<
+    "unknown" | "granted" | "denied" | "prompt"
+  >("unknown");
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -60,15 +62,20 @@ export default function Signup() {
     let permWatcher: any = null;
     const requestLocation = async () => {
       if (!("geolocation" in navigator)) {
-        setLocationStatus('denied');
+        setLocationStatus("denied");
         return;
       }
 
       // Prefer Permissions API to check state first
       try {
-        if ((navigator as any).permissions && (navigator as any).permissions.query) {
-          const p = await (navigator as any).permissions.query({ name: 'geolocation' });
-          setLocationStatus(p.state || 'unknown');
+        if (
+          (navigator as any).permissions &&
+          (navigator as any).permissions.query
+        ) {
+          const p = await (navigator as any).permissions.query({
+            name: "geolocation",
+          });
+          setLocationStatus(p.state || "unknown");
 
           const handlePosSuccess = async (pos: GeolocationPosition) => {
             const lat = pos.coords.latitude.toString();
@@ -80,29 +87,48 @@ export default function Signup() {
               signup_lng: lng,
               signup_address: address || `${lat},${lng}`,
             }));
-            setLocationStatus('granted');
+            setLocationStatus("granted");
           };
 
           const handlePosError = (err: GeolocationPositionError) => {
-            console.warn('Geolocation permission denied or failed', err);
-            setLocationStatus('denied');
-            setFormData((prev) => ({ ...prev, signup_lat: '', signup_lng: '', signup_address: '' }));
+            console.warn("Geolocation permission denied or failed", err);
+            setLocationStatus("denied");
+            setFormData((prev) => ({
+              ...prev,
+              signup_lat: "",
+              signup_lng: "",
+              signup_address: "",
+            }));
           };
 
-          if (p.state === 'granted') {
-            navigator.geolocation.getCurrentPosition(handlePosSuccess, handlePosError, { enableHighAccuracy: true, timeout: 10000 });
-          } else if (p.state === 'prompt') {
+          if (p.state === "granted") {
+            navigator.geolocation.getCurrentPosition(
+              handlePosSuccess,
+              handlePosError,
+              { enableHighAccuracy: true, timeout: 10000 },
+            );
+          } else if (p.state === "prompt") {
             // Trigger prompt
-            navigator.geolocation.getCurrentPosition(handlePosSuccess, handlePosError, { enableHighAccuracy: true, timeout: 10000 });
+            navigator.geolocation.getCurrentPosition(
+              handlePosSuccess,
+              handlePosError,
+              { enableHighAccuracy: true, timeout: 10000 },
+            );
           } else {
             // denied
-            setLocationStatus('denied');
-            setFormData((prev) => ({ ...prev, signup_lat: '', signup_lng: '', signup_address: '' }));
+            setLocationStatus("denied");
+            setFormData((prev) => ({
+              ...prev,
+              signup_lat: "",
+              signup_lng: "",
+              signup_address: "",
+            }));
           }
 
-          permWatcher = () => setLocationStatus((p as any).state || 'unknown');
+          permWatcher = () => setLocationStatus((p as any).state || "unknown");
           // some browsers expose onchange handler
-          if (typeof p.onchange === 'function') p.onchange = () => setLocationStatus((p as any).state || 'unknown');
+          if (typeof p.onchange === "function")
+            p.onchange = () => setLocationStatus((p as any).state || "unknown");
         } else {
           // Fallback: directly prompt
           navigator.geolocation.getCurrentPosition(
@@ -116,12 +142,17 @@ export default function Signup() {
                 signup_lng: lng,
                 signup_address: address || `${lat},${lng}`,
               }));
-              setLocationStatus('granted');
+              setLocationStatus("granted");
             },
             (err) => {
-              console.warn('Geolocation permission denied or failed', err);
-              setLocationStatus('denied');
-              setFormData((prev) => ({ ...prev, signup_lat: '', signup_lng: '', signup_address: '' }));
+              console.warn("Geolocation permission denied or failed", err);
+              setLocationStatus("denied");
+              setFormData((prev) => ({
+                ...prev,
+                signup_lat: "",
+                signup_lng: "",
+                signup_address: "",
+              }));
             },
             { enableHighAccuracy: true, timeout: 10000 },
           );
@@ -139,24 +170,34 @@ export default function Signup() {
               signup_lng: lng,
               signup_address: address || `${lat},${lng}`,
             }));
-            setLocationStatus('granted');
+            setLocationStatus("granted");
           },
           (err) => {
-            console.warn('Geolocation permission denied or failed', err);
-            setLocationStatus('denied');
-            setFormData((prev) => ({ ...prev, signup_lat: '', signup_lng: '', signup_address: '' }));
+            console.warn("Geolocation permission denied or failed", err);
+            setLocationStatus("denied");
+            setFormData((prev) => ({
+              ...prev,
+              signup_lat: "",
+              signup_lng: "",
+              signup_address: "",
+            }));
           },
           { enableHighAccuracy: true, timeout: 10000 },
         );
       }
     };
 
-    if (formData.role === 'customer') {
+    if (formData.role === "customer") {
       requestLocation();
     } else {
       // Clear any captured location when role changes away from customer
-      setLocationStatus('unknown');
-      setFormData((prev) => ({ ...prev, signup_lat: '', signup_lng: '', signup_address: '' }));
+      setLocationStatus("unknown");
+      setFormData((prev) => ({
+        ...prev,
+        signup_lat: "",
+        signup_lng: "",
+        signup_address: "",
+      }));
     }
 
     return () => {
@@ -190,7 +231,9 @@ export default function Signup() {
 
     // If customer role, ensure location was captured (user granted permission)
     if (formData.role === "customer" && !formData.signup_address) {
-      setError("Location permission is required for customer accounts. Please enable location access.");
+      setError(
+        "Location permission is required for customer accounts. Please enable location access.",
+      );
       setLoading(false);
       return;
     }
@@ -379,8 +422,11 @@ export default function Signup() {
                   </SelectItem>
                 </SelectContent>
               </Select>
-              {formData.role === 'customer' && locationStatus === 'denied' && (
-                <p className="mt-2 text-sm text-red-600">Location permission denied. Please enable location access in your browser to create a customer account.</p>
+              {formData.role === "customer" && locationStatus === "denied" && (
+                <p className="mt-2 text-sm text-red-600">
+                  Location permission denied. Please enable location access in
+                  your browser to create a customer account.
+                </p>
               )}
             </div>
 
@@ -665,7 +711,11 @@ export default function Signup() {
             <Button
               type="submit"
               className="w-full"
-              disabled={loading || !formData.agreeToTerms || (formData.role === "customer" && !formData.signup_address)}
+              disabled={
+                loading ||
+                !formData.agreeToTerms ||
+                (formData.role === "customer" && !formData.signup_address)
+              }
             >
               {loading ? "Creating Account..." : "Create Account"}
             </Button>

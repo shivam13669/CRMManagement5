@@ -741,7 +741,8 @@ export default function AmbulanceManagement() {
                             </p>
                             <a
                               href={
-                                selectedRequest.customer_signup_lat && selectedRequest.customer_signup_lng
+                                selectedRequest.customer_signup_lat &&
+                                selectedRequest.customer_signup_lng
                                   ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
                                       `${selectedRequest.customer_signup_lat},${selectedRequest.customer_signup_lng}`,
                                     )}`

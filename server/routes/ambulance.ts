@@ -127,7 +127,10 @@ export const handleGetAmbulanceRequests: RequestHandler = async (req, res) => {
       ORDER BY ar.created_at DESC
     `);
     } catch (err) {
-      console.warn('Ambulance query with signup_lat/signup_lng failed, falling back to older query', err);
+      console.warn(
+        "Ambulance query with signup_lat/signup_lng failed, falling back to older query",
+        err,
+      );
       // Fallback to older query if DB doesn't have the new columns
       result = db.exec(`
       SELECT
