@@ -372,12 +372,12 @@ export default function CustomerDashboard() {
             </div>
           </DialogHeader>
           <DialogDescription className="space-y-3">
-            <p>
+            <div>
               We need your location to provide accurate ambulance emergency services.
-            </p>
-            <p className="text-sm text-gray-600">
+            </div>
+            <div className="text-sm text-gray-600">
               Your location will be shared with emergency response teams to ensure quick assistance.
-            </p>
+            </div>
           </DialogDescription>
           <DialogFooter className="flex gap-3 pt-4">
             <Button
