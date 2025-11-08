@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { CustomerLayout } from "../components/CustomerLayout";
 import { useNavigate } from "react-router-dom";
 import {
@@ -13,6 +14,7 @@ import {
   Thermometer,
   Activity,
   DollarSign,
+  MapPin,
 } from "lucide-react";
 import {
   Card,
@@ -22,10 +24,55 @@ import {
   CardTitle,
 } from "../components/ui/card";
 import { Button } from "../components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "../components/ui/dialog";
+import { getLocationWithPermission } from "../lib/location";
 
 export default function CustomerDashboard() {
   const userName = localStorage.getItem("userName") || "Customer";
   const navigate = useNavigate();
+  const [showLocationDialog, setShowLocationDialog] = useState(false);
+  const [locationRequested, setLocationRequested] = useState(false);
+
+  useEffect(() => {
+    const requestLocationOnFirstLogin = async () => {
+      if (locationRequested) return;
+
+      setLocationRequested(true);
+
+      // Check if location permission was already asked
+      const permissionStatus = localStorage.getItem("locationPermission");
+      if (!permissionStatus) {
+        // First time - show dialog and request location
+        setShowLocationDialog(true);
+      }
+    };
+
+    requestLocationOnFirstLogin();
+  }, [locationRequested]);
+
+  const handleAllowLocation = async () => {
+    try {
+      await getLocationWithPermission();
+      setShowLocationDialog(false);
+    } catch (error) {
+      console.error("Error getting location:", error);
+    }
+  };
+
+  const handleDenyLocation = () => {
+    localStorage.setItem(
+      "locationPermission",
+      JSON.stringify({ allowed: false, timestamp: Date.now() }),
+    );
+    setShowLocationDialog(false);
+  };
 
   const quickActions = [
     {
@@ -315,6 +362,45 @@ export default function CustomerDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Location Permission Dialog */}
+      <Dialog open={showLocationDialog} onOpenChange={setShowLocationDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex items-center space-x-3 mb-2">
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <MapPin className="w-6 h-6 text-blue-600" />
+              </div>
+              <DialogTitle>Location Permission Required</DialogTitle>
+            </div>
+          </DialogHeader>
+          <DialogDescription className="space-y-3">
+            <div>
+              We need your location to provide accurate ambulance emergency
+              services.
+            </div>
+            <div className="text-sm text-gray-600">
+              Your location will be shared with emergency response teams to
+              ensure quick assistance.
+            </div>
+          </DialogDescription>
+          <DialogFooter className="flex gap-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={handleDenyLocation}
+              className="flex-1"
+            >
+              Not Now
+            </Button>
+            <Button
+              onClick={handleAllowLocation}
+              className="flex-1 bg-blue-600 hover:bg-blue-700"
+            >
+              Allow Location
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </CustomerLayout>
   );
 }
