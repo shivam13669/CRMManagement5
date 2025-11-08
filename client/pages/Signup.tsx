@@ -254,6 +254,38 @@ export default function Signup() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
+              <Label className="text-sm font-medium text-gray-700">
+                I am a
+              </Label>
+              <Select
+                value={formData.role}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, role: value }))
+                }
+              >
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select your role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="customer">
+                    Customer - Book appointments, request services
+                  </SelectItem>
+                  <SelectItem value="doctor">
+                    Doctor - Manage customers and reports
+                  </SelectItem>
+                  <SelectItem value="staff">
+                    Staff - Handle ambulance and complaints
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              {formData.role === "customer" && formData.signup_address && (
+                <p className="text-sm text-gray-500 mt-2">
+                  Location captured: {formData.signup_address}
+                </p>
+              )}
+            </div>
+
+            <div>
               <Label
                 htmlFor="name"
                 className="text-sm font-medium text-gray-700"
@@ -320,33 +352,6 @@ export default function Signup() {
                 className="mt-1"
                 placeholder="Enter your email"
               />
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium text-gray-700">
-                I am a
-              </Label>
-              <Select
-                value={formData.role}
-                onValueChange={(value) =>
-                  setFormData((prev) => ({ ...prev, role: value }))
-                }
-              >
-                <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="Select your role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="customer">
-                    Customer - Book appointments, request services
-                  </SelectItem>
-                  <SelectItem value="doctor">
-                    Doctor - Manage customers and reports
-                  </SelectItem>
-                  <SelectItem value="staff">
-                    Staff - Handle ambulance and complaints
-                  </SelectItem>
-                </SelectContent>
-              </Select>
             </div>
 
             {/* Doctor Specific Fields */}
