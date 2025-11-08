@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CustomerLayout } from "../components/CustomerLayout";
 import {
   Truck,
@@ -7,6 +7,7 @@ import {
   Clock,
   AlertTriangle,
   Navigation,
+  Loader,
 } from "lucide-react";
 import {
   Card,
@@ -16,35 +17,14 @@ import {
   CardTitle,
 } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../components/ui/select";
-import { Textarea } from "../components/ui/textarea";
 
 export default function RequestAmbulance() {
-  const [formData, setFormData] = useState({
-    emergencyType: "",
-    patientName: "",
-    patientAge: "",
-    patientGender: "",
-    contactNumber: "",
-    email: "",
-    address: "",
-    landmark: "",
-    description: "",
-    urgencyLevel: "high",
-  });
-
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [requestId, setRequestId] = useState<string | null>(null);
+  const [userPhone, setUserPhone] = useState<string>("");
+  const [userLocation, setUserLocation] = useState<string | null>(null);
 
   const emergencyTypes = [
     "Heart Attack",
