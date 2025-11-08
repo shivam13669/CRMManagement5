@@ -76,6 +76,48 @@ export default function AmbulanceManagement() {
     useState<AmbulanceRequest | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
+  // Cache for resolved addresses when pickup_address contains lat,lng
+  const [resolvedAddresses, setResolvedAddresses] = useState<Record<number, string>>({});
+  const [resolvingIds, setResolvingIds] = useState<Record<number, boolean>>({});
+
+  const latLngRegex = /^\s*-?\d+(?:\.\d+)?\s*,\s*-?\d+(?:\.\d+)?\s*$/;
+
+  const reverseGeocode = async (lat: string, lng: string) => {
+    try {
+      const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(
+        lat,
+      )}&lon=${encodeURIComponent(lng)}`;
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data.display_name || null;
+    } catch (err) {
+      console.error('Reverse geocode failed', err);
+      return null;
+    }
+  };
+
+  const resolveAddressForRequest = async (request: AmbulanceRequest) => {
+    if (!request || !request.pickup_address) return;
+    if (!latLngRegex.test(request.pickup_address)) return;
+    if (resolvedAddresses[request.id] || resolvingIds[request.id]) return;
+
+    setResolvingIds((s) => ({ ...s, [request.id]: true }));
+
+    const [lat, lng] = request.pickup_address.split(",").map((v) => v.trim());
+    const address = await reverseGeocode(lat, lng);
+
+    if (address) {
+      setResolvedAddresses((s) => ({ ...s, [request.id]: address }));
+    }
+
+    setResolvingIds((s) => {
+      const copy = { ...s };
+      delete copy[request.id];
+      return copy;
+    });
+  };
+
   const fetchRequests = async (showRefreshing = false) => {
     try {
       if (showRefreshing) setRefreshing(true);
