@@ -33,6 +33,8 @@ interface RegisterRequest {
   gender?: "male" | "female" | "other";
   blood_group?: string;
   address?: string;
+  signup_lat?: string;
+  signup_lng?: string;
   emergency_contact?: string;
   emergency_contact_name?: string;
   emergency_contact_relation?: string;
