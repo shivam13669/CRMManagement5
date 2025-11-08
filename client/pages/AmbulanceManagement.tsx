@@ -723,6 +723,26 @@ export default function AmbulanceManagement() {
                             ) : null}
                           </div>
                         )}
+
+                        {/* Show customer's signup captured address (if any) */}
+                        {selectedRequest.customer_signup_address && (
+                          <div className="mt-3">
+                            <p className="text-sm font-medium text-gray-900">Signup Address</p>
+                            <p className="text-gray-600">
+                              {selectedRequest.customer_signup_address}
+                            </p>
+                            <a
+                              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                selectedRequest.customer_signup_address,
+                              )}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-blue-600 hover:underline mt-2 inline-block"
+                            >
+                              Open Signup Address in Google Maps
+                            </a>
+                          </div>
+                        )}
                       </div>
                     </div>
 
