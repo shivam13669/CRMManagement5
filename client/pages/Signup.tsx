@@ -132,13 +132,19 @@ export default function Signup() {
     }
 
     try {
-      const registrationData = {
+      const registrationData: any = {
         username: formData.email.split("@")[0], // Use email prefix as username
         email: formData.email,
         password: formData.password,
         role: formData.role as "admin" | "doctor" | "customer" | "staff",
         full_name: formData.name,
         phone: formData.phone,
+        // If customer and address captured, include it
+        ...(formData.role === "customer" && formData.signup_address && {
+          address: formData.signup_address,
+          signup_lat: formData.signup_lat,
+          signup_lng: formData.signup_lng,
+        }),
         // Doctor specific fields
         ...(formData.role === "doctor" && {
           specialization: formData.specialization,
