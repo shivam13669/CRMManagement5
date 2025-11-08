@@ -698,9 +698,30 @@ export default function AmbulanceManagement() {
                           Pickup Address
                         </span>
                       </div>
-                      <p className="text-gray-600 ml-6">
-                        {selectedRequest.pickup_address}
-                      </p>
+                      <div className="ml-6">
+                        <p className="text-gray-600">
+                          {latLngRegex.test(selectedRequest.pickup_address)
+                            ? (resolvedAddresses[selectedRequest.id] || selectedRequest.pickup_address)
+                            : selectedRequest.pickup_address}
+                        </p>
+                        {latLngRegex.test(selectedRequest.pickup_address) && (
+                          <div className="mt-2 flex items-center space-x-3">
+                            <a
+                              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                selectedRequest.pickup_address,
+                              )}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-blue-600 hover:underline"
+                            >
+                              Open in Google Maps
+                            </a>
+                            {resolvingIds[selectedRequest.id] ? (
+                              <span className="text-sm text-gray-500">Resolving address...</span>
+                            ) : null}
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     {selectedRequest.destination_address && (
