@@ -267,7 +267,7 @@ export default function RequestAmbulance() {
                   className="w-full"
                   size="lg"
                   variant="destructive"
-                  disabled={isLoading || !userPhone}
+                  disabled={isLoading}
                 >
                   {isLoading ? (
                     <>
