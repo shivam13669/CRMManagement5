@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Activity, CheckCircle } from "lucide-react";
 import { Button } from "../components/ui/button";
@@ -27,12 +27,57 @@ export default function Signup() {
     confirmPassword: "",
     role: "",
     agreeToTerms: false,
+    // Signup captured location (for customers)
+    signup_address: "",
+    signup_lat: "",
+    signup_lng: "",
     // Doctor specific fields
     specialization: "",
     licenseNumber: "",
     experienceYears: "",
     consultationFee: "",
   });
+
+  // Reverse geocode helper (OpenStreetMap Nominatim)
+  const reverseGeocode = async (lat: string, lng: string) => {
+    try {
+      const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(
+        lat,
+      )}&lon=${encodeURIComponent(lng)}`;
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data.display_name || null;
+    } catch (err) {
+      console.error("Reverse geocode failed", err);
+      return null;
+    }
+  };
+
+  // Request location when role set to customer
+  useEffect(() => {
+    if (formData.role === "customer") {
+      if (!("geolocation" in navigator)) return;
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const lat = pos.coords.latitude.toString();
+          const lng = pos.coords.longitude.toString();
+          const address = await reverseGeocode(lat, lng);
+          setFormData((prev) => ({
+            ...prev,
+            signup_lat: lat,
+            signup_lng: lng,
+            signup_address: address || `${lat},${lng}`,
+          }));
+        },
+        (err) => {
+          console.warn("Geolocation permission denied or failed", err);
+        },
+        { enableHighAccuracy: true, timeout: 10000 },
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.role]);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -87,13 +132,20 @@ export default function Signup() {
     }
 
     try {
-      const registrationData = {
+      const registrationData: any = {
         username: formData.email.split("@")[0], // Use email prefix as username
         email: formData.email,
         password: formData.password,
         role: formData.role as "admin" | "doctor" | "customer" | "staff",
         full_name: formData.name,
         phone: formData.phone,
+        // If customer and address captured, include it
+        ...(formData.role === "customer" &&
+          formData.signup_address && {
+            address: formData.signup_address,
+            signup_lat: formData.signup_lat,
+            signup_lng: formData.signup_lng,
+          }),
         // Doctor specific fields
         ...(formData.role === "doctor" && {
           specialization: formData.specialization,
@@ -209,6 +261,33 @@ export default function Signup() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
+              <Label className="text-sm font-medium text-gray-700">
+                I am a
+              </Label>
+              <Select
+                value={formData.role}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, role: value }))
+                }
+              >
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select your role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="customer">
+                    Customer - Book appointments, request services
+                  </SelectItem>
+                  <SelectItem value="doctor">
+                    Doctor - Manage customers and reports
+                  </SelectItem>
+                  <SelectItem value="staff">
+                    Staff - Handle ambulance and complaints
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
               <Label
                 htmlFor="name"
                 className="text-sm font-medium text-gray-700"
@@ -275,33 +354,6 @@ export default function Signup() {
                 className="mt-1"
                 placeholder="Enter your email"
               />
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium text-gray-700">
-                I am a
-              </Label>
-              <Select
-                value={formData.role}
-                onValueChange={(value) =>
-                  setFormData((prev) => ({ ...prev, role: value }))
-                }
-              >
-                <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="Select your role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="customer">
-                    Customer - Book appointments, request services
-                  </SelectItem>
-                  <SelectItem value="doctor">
-                    Doctor - Manage customers and reports
-                  </SelectItem>
-                  <SelectItem value="staff">
-                    Staff - Handle ambulance and complaints
-                  </SelectItem>
-                </SelectContent>
-              </Select>
             </div>
 
             {/* Doctor Specific Fields */}

@@ -76,6 +76,50 @@ export default function AmbulanceManagement() {
     useState<AmbulanceRequest | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
+  // Cache for resolved addresses when pickup_address contains lat,lng
+  const [resolvedAddresses, setResolvedAddresses] = useState<
+    Record<number, string>
+  >({});
+  const [resolvingIds, setResolvingIds] = useState<Record<number, boolean>>({});
+
+  const latLngRegex = /^\s*-?\d+(?:\.\d+)?\s*,\s*-?\d+(?:\.\d+)?\s*$/;
+
+  const reverseGeocode = async (lat: string, lng: string) => {
+    try {
+      const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(
+        lat,
+      )}&lon=${encodeURIComponent(lng)}`;
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data.display_name || null;
+    } catch (err) {
+      console.error("Reverse geocode failed", err);
+      return null;
+    }
+  };
+
+  const resolveAddressForRequest = async (request: AmbulanceRequest) => {
+    if (!request || !request.pickup_address) return;
+    if (!latLngRegex.test(request.pickup_address)) return;
+    if (resolvedAddresses[request.id] || resolvingIds[request.id]) return;
+
+    setResolvingIds((s) => ({ ...s, [request.id]: true }));
+
+    const [lat, lng] = request.pickup_address.split(",").map((v) => v.trim());
+    const address = await reverseGeocode(lat, lng);
+
+    if (address) {
+      setResolvedAddresses((s) => ({ ...s, [request.id]: address }));
+    }
+
+    setResolvingIds((s) => {
+      const copy = { ...s };
+      delete copy[request.id];
+      return copy;
+    });
+  };
+
   const fetchRequests = async (showRefreshing = false) => {
     try {
       if (showRefreshing) setRefreshing(true);
@@ -466,6 +510,8 @@ export default function AmbulanceManagement() {
                 onClick={() => {
                   setSelectedRequest(request);
                   setModalOpen(true);
+                  // resolve address when opening details
+                  resolveAddressForRequest(request);
                 }}
                 className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow cursor-pointer"
               >
@@ -505,8 +551,24 @@ export default function AmbulanceManagement() {
                   <div className="flex items-start space-x-2">
                     <MapPin className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
                     <span className="text-gray-600 line-clamp-2">
-                      {request.pickup_address}
+                      {latLngRegex.test(request.pickup_address)
+                        ? resolvedAddresses[request.id] ||
+                          request.pickup_address
+                        : request.pickup_address}
                     </span>
+                    {latLngRegex.test(request.pickup_address) && (
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                          request.pickup_address,
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-2 text-xs text-blue-600 hover:underline"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        View on Google Maps
+                      </a>
+                    )}
                   </div>
                 </div>
 
@@ -641,9 +703,55 @@ export default function AmbulanceManagement() {
                           Pickup Address
                         </span>
                       </div>
-                      <p className="text-gray-600 ml-6">
-                        {selectedRequest.pickup_address}
-                      </p>
+                      <div className="ml-6">
+                        <p className="text-gray-600">
+                          {latLngRegex.test(selectedRequest.pickup_address)
+                            ? resolvedAddresses[selectedRequest.id] ||
+                              selectedRequest.pickup_address
+                            : selectedRequest.pickup_address}
+                        </p>
+                        {latLngRegex.test(selectedRequest.pickup_address) && (
+                          <div className="mt-2 flex items-center space-x-3">
+                            <a
+                              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                selectedRequest.pickup_address,
+                              )}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-blue-600 hover:underline"
+                            >
+                              Open in Google Maps
+                            </a>
+                            {resolvingIds[selectedRequest.id] ? (
+                              <span className="text-sm text-gray-500">
+                                Resolving address...
+                              </span>
+                            ) : null}
+                          </div>
+                        )}
+
+                        {/* Show customer's signup captured address (if any) */}
+                        {selectedRequest.customer_signup_address && (
+                          <div className="mt-3">
+                            <p className="text-sm font-medium text-gray-900">
+                              Signup Address
+                            </p>
+                            <p className="text-gray-600">
+                              {selectedRequest.customer_signup_address}
+                            </p>
+                            <a
+                              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                selectedRequest.customer_signup_address,
+                              )}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-blue-600 hover:underline mt-2 inline-block"
+                            >
+                              Open Signup Address in Google Maps
+                            </a>
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     {selectedRequest.destination_address && (

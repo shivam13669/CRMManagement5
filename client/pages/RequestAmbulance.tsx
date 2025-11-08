@@ -51,7 +51,15 @@ export default function RequestAmbulance() {
           });
           if (response.ok) {
             const data = await response.json();
-            setUserPhone(data.phone || "");
+            // API returns { user: {...} }
+            setUserPhone(
+              (data &&
+                data.user &&
+                (data.user.phone ||
+                  data.user.mobile ||
+                  data.user.contact_number)) ||
+                "",
+            );
           }
         }
       } catch (error) {
