@@ -34,6 +34,11 @@ export const saveLocationPermissionStatus = (allowed: boolean) => {
   localStorage.setItem("locationPermission", JSON.stringify(status));
 };
 
+// Clear location permission (to allow re-asking)
+export const clearLocationPermissionStatus = () => {
+  localStorage.removeItem("locationPermission");
+};
+
 // Get stored location
 export const getStoredLocation = (): LocationData | null => {
   try {
