@@ -547,8 +547,23 @@ export default function AmbulanceManagement() {
                   <div className="flex items-start space-x-2">
                     <MapPin className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
                     <span className="text-gray-600 line-clamp-2">
-                      {request.pickup_address}
+                      {latLngRegex.test(request.pickup_address)
+                        ? (resolvedAddresses[request.id] || request.pickup_address)
+                        : request.pickup_address}
                     </span>
+                    {latLngRegex.test(request.pickup_address) && (
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                          request.pickup_address,
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-2 text-xs text-blue-600 hover:underline"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        View on Google Maps
+                      </a>
+                    )}
                   </div>
                 </div>
 
